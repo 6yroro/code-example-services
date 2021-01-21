@@ -1,0 +1,14 @@
+apply plugin: 'java'
+
+group = 'code-example-services'
+version = '1.0'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
