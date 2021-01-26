@@ -3,8 +3,4 @@ subprojects {
     group = 'code-example-services'
     version = '1.0'
     sourceCompatibility = 1.8
-
-    dependencies {
-        testCompile "junit:junit:4.12"
-    }
 }
