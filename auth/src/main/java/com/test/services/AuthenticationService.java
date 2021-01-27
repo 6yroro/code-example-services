@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.Charset;
 import java.sql.Date;
 import java.util.stream.Collectors;
 
@@ -27,11 +28,13 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final static String USER_AUTHORITY = "USER";
+    private final String Secret;
 
     @Autowired
     public AuthenticationService(AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
+        Secret = "SECRET_KEY_FOR_TESTING_SPRING_SECURITY";
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -46,7 +49,7 @@ public class AuthenticationService {
                         .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + 10 * 60 * 1000))
-                .signWith(Keys.hmacShaKeyFor(passwordEncoder.encode("TEST_SECRET").getBytes()), SignatureAlgorithm.HS256)
+                .signWith(Keys.hmacShaKeyFor(Secret.getBytes(Charset.forName("UTF-8"))))
                 .compact();
 
         return new AuthenticationResponse(token);

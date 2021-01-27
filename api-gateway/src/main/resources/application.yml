@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: api-gateway-service
+
+logging:
+  level:
+    root: info
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+
+zuul:
+  ignored-services: '*'
+  routes:
+    auth-service:
+      path: /auth/**
+      service-id: auth-service
+      strip-prefix: false
+      sensitive-headers: Cookie, Set-Cookie
+      ignored-headers: Access-Control-Allow-Credentials, Access-Control-Allow-Origin
+    register-service:
+      path: /register/**
+      service-id: auth-service
+      strip-prefix: false
+      sensitive-headers: Cookie, Set-Cookie
+      ignored-headers: Access-Control-Allow-Credentials, Access-Control-Allow-Origin
+
+ribbon:
+  ReadTimeout: 3000
