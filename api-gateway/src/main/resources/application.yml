@@ -23,6 +23,12 @@ zuul:
       strip-prefix: true
       sensitive-headers: Cookie, Set-Cookie
       ignored-headers: Access-Control-Allow-Credentials, Access-Control-Allow-Origin
+    data-service:
+      path: /data/**
+      service-id: data-service
+    audit-service:
+      path: /audit/**
+      service-id: audit-service
 
 ribbon:
   ReadTimeout: 3000

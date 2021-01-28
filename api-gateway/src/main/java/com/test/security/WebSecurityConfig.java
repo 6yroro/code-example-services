@@ -46,6 +46,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/auth").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth/register").hasAuthority("ADMIN")
+                .antMatchers("/data/**").hasAnyAuthority("ADMIN", "USER")
+                .antMatchers("/audit/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and()
             .cors();

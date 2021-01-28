@@ -23,12 +23,14 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    public @ResponseBody ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+    @ResponseBody
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 
     @RequestMapping(value = "register", method = RequestMethod.POST)
-    public @ResponseBody ResponseEntity<AuthUser> register(@RequestBody AuthenticationRequest request) {
+    @ResponseBody
+    public ResponseEntity<AuthUser> register(@RequestBody AuthenticationRequest request) {
         return new ResponseEntity<>(authenticationService.registerUser(request), HttpStatus.CREATED);
     }
 
