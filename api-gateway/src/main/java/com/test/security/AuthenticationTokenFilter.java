@@ -3,13 +3,10 @@ package com.test.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -28,8 +25,6 @@ import java.util.stream.Collectors;
 @Component
 public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthenticationTokenFilter.class);
-
     private final String tokenHeader;
     private final String tokenPrefix;
     private final String Secret;
@@ -41,15 +36,13 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String header = request.getHeader(tokenHeader);
 
-        log.info("header = " + header);
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain chain)throws IOException, ServletException {
+        String header = request.getHeader(tokenHeader);
 
         if (header != null && header.startsWith(tokenPrefix)) {
             String token = header.replace(tokenPrefix, "");
-
-            log.info("token = " + token);
 
             try {
                 Claims claims = Jwts.parserBuilder()
@@ -59,11 +52,9 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
                         .getBody();
 
                 String username = claims.getSubject();
-                log.info("username = " + username);
                 if (username != null) {
                     @SuppressWarnings("unchecked")
                     List<String> authorities = (List<String>) claims.get("authorities");
-                    log.info("authorities = " + authorities);
                     SecurityContextHolder.getContext().setAuthentication(
                             new UsernamePasswordAuthenticationToken(username, null,
                                     authorities.stream()
@@ -71,7 +62,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
                                             .collect(Collectors.toList())));
                 }
             } catch (Exception e) {
-                log.info("error", e);
+                e.printStackTrace();
                 SecurityContextHolder.clearContext();
             }
         }
