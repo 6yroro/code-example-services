@@ -22,7 +22,7 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
-    @RequestMapping(value = "auth", method = RequestMethod.POST)
+    @RequestMapping(value = "/", method = RequestMethod.POST)
     public @ResponseBody ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }

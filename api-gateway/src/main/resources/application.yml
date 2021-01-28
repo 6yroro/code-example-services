@@ -20,13 +20,7 @@ zuul:
     auth-service:
       path: /auth/**
       service-id: auth-service
-      strip-prefix: false
-      sensitive-headers: Cookie, Set-Cookie
-      ignored-headers: Access-Control-Allow-Credentials, Access-Control-Allow-Origin
-    register-service:
-      path: /register/**
-      service-id: auth-service
-      strip-prefix: false
+      strip-prefix: true
       sensitive-headers: Cookie, Set-Cookie
       ignored-headers: Access-Control-Allow-Credentials, Access-Control-Allow-Origin
 

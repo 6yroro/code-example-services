@@ -30,13 +30,12 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
     private final String Secret;
 
     public AuthenticationTokenFilter() {
-        tokenHeader = "X-Auth-Token";
+        tokenHeader = "Authorization";
         tokenPrefix = "Bearer ";
         Secret = "SECRET_KEY_FOR_TESTING_SPRING_SECURITY";
     }
 
     @Override
-
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
                                     @NonNull FilterChain chain)throws IOException, ServletException {
         String header = request.getHeader(tokenHeader);
