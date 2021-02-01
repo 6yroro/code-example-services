@@ -31,12 +31,7 @@ public class AuditRecordService {
     }
 
     public AuditRecord saveRecord(AuditRecord record) {
-        AuditRecord newRecord = new AuditRecord();
-        newRecord.setUser(record.getUser());
-        newRecord.setAction(record.getAction());
-        newRecord.setResult(record.getResult());
-        newRecord.setDate(record.getDate());
-        return auditRecordRepository.save(newRecord);
+        return auditRecordRepository.save(record);
     }
 
 }

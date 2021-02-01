@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeSet Alexander Zubkov:1_data_init splitStatements:true
+--changeSet Alexander Zubkov:data_1_init splitStatements:true
 
 drop schema if exists data cascade;
 

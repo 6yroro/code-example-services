@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeSet Alexander Zubkov:2_data_data splitStatements:true
+--changeSet Alexander Zubkov:data_2_data splitStatements:true
 
 insert into data.data
   (code, name, description, date, username)

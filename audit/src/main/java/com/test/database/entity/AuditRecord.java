@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * @author Alexander Zubkov
  */
 @Entity
-@Table(name = "records", schema = "audit")
+@Table(name = "record", schema = "audit")
 @DynamicInsert
 @Data
 public class AuditRecord {
@@ -21,10 +21,13 @@ public class AuditRecord {
     private Long id;
 
     @Column(name = "username")
-    private String user;
+    private String username;
 
     @Column(name = "action")
     private String action;
+
+    @Column(name = "params")
+    private String params;
 
     @Column(name = "result")
     private String result;
