@@ -1,8 +1,8 @@
 package com.test.controller;
 
+import com.test.database.entity.AuthUser;
 import com.test.model.AuthenticationRequest;
 import com.test.model.AuthenticationResponse;
-import com.test.model.AuthUser;
 import com.test.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

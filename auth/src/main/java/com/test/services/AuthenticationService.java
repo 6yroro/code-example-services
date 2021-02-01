@@ -1,8 +1,10 @@
 package com.test.services;
 
+import com.test.database.entity.AuthUser;
+import com.test.database.repository.AuthUserRepository;
+import com.test.exceptions.UserExistException;
 import com.test.model.AuthenticationRequest;
 import com.test.model.AuthenticationResponse;
-import com.test.model.AuthUser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +27,15 @@ import java.util.stream.Collectors;
 public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
+    private final AuthUserRepository authUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final static String USER_AUTHORITY = "USER";
     private final String Secret;
 
     @Autowired
-    public AuthenticationService(AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
+    public AuthenticationService(AuthenticationManager authenticationManager, AuthUserRepository authUserRepository, PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
+        this.authUserRepository = authUserRepository;
         this.passwordEncoder = passwordEncoder;
         Secret = "SECRET_KEY_FOR_TESTING_SPRING_SECURITY";
     }
@@ -55,11 +59,20 @@ public class AuthenticationService {
     }
 
     public AuthUser registerUser(AuthenticationRequest request) {
-        return AuthUser.builder()
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .authorities(USER_AUTHORITY)
-                .build();
+        AuthUser user = authUserRepository
+                .findAuthUserByUsername(request.getUsername())
+                .orElse(null);
+
+        if (user != null) {
+            throw new UserExistException("User " + request.getUsername() + " already exist");
+        }
+
+        AuthUser newUser = new AuthUser();
+        newUser.setUsername(request.getUsername());
+        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        newUser.setAuthorities(request.getAuthorities() != null ? request.getAuthorities() : USER_AUTHORITY);
+
+        return authUserRepository.save(newUser);
     }
 
 }

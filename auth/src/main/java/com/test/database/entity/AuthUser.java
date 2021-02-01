@@ -1,19 +1,21 @@
 package com.test.database.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 /**
  * @author Alexander Zubkov
  */
 @Entity
-@Table(name = "records", schema = "audit")
+@Table(name = "users", schema = "auth")
 @DynamicInsert
 @Data
-public class AuditRecord {
+public class AuthUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,16 +25,9 @@ public class AuditRecord {
     @Column(name = "username")
     private String username;
 
-    @Column(name = "action")
-    private String action;
+    @Column(name = "password")
+    private String password;
 
-    @Column(name = "params")
-    private String params;
-
-    @Column(name = "result")
-    private String result;
-
-    @Column(name = "date")
-    private LocalDateTime date;
-
+    @Column(name = "authorities")
+    private String authorities;
 }

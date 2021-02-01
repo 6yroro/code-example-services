@@ -6,7 +6,7 @@ drop schema if exists audit cascade;
 
 create schema audit;
 
-create table audit.record
+create table audit.records
 (
   id        bigserial,
   username  character varying(100),
