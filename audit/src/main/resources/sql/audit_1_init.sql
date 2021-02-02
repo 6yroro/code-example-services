@@ -11,7 +11,7 @@ create table audit.records
   id        bigserial,
   username  character varying(100),
   action    character varying(100),
-  params    character varying(100),
-  result    character varying(100),
+  params    character varying(500),
+  result    character varying(500),
   date      timestamp
 );

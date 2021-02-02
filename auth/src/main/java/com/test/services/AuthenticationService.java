@@ -4,7 +4,6 @@ import com.test.database.entity.AuthUser;
 import com.test.database.repository.AuthUserRepository;
 import com.test.exceptions.UserExistException;
 import com.test.model.AuthenticationRequest;
-import com.test.model.AuthenticationResponse;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +28,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final AuthUserRepository authUserRepository;
     private final PasswordEncoder passwordEncoder;
+
     private final static String USER_AUTHORITY = "USER";
     private final String Secret;
 
@@ -40,13 +40,14 @@ public class AuthenticationService {
         Secret = "SECRET_KEY_FOR_TESTING_SPRING_SECURITY";
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    String authenticate(AuthenticationRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Long now = System.currentTimeMillis();
-        String token = Jwts.builder()
+
+        return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("authorities", authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
@@ -54,11 +55,9 @@ public class AuthenticationService {
                 .setExpiration(new Date(now + 10 * 60 * 1000))
                 .signWith(Keys.hmacShaKeyFor(Secret.getBytes(Charset.forName("UTF-8"))))
                 .compact();
-
-        return new AuthenticationResponse(token);
     }
 
-    public AuthUser registerUser(AuthenticationRequest request) {
+    AuthUser registerUser(AuthenticationRequest request) {
         AuthUser user = authUserRepository
                 .findAuthUserByUsername(request.getUsername())
                 .orElse(null);

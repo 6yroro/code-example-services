@@ -17,6 +17,8 @@ spring:
             non_contextual_creation: true
   liquibase:
     change-log: classpath:liquibase-changelog.xml
+  activemq:
+    broker-url: tcp://localhost:61616
 
 logging:
   level:
