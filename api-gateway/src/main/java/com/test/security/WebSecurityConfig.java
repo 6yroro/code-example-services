@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -24,10 +25,12 @@ import java.util.stream.Collectors;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final AuthenticationTokenFilter authenticationTokenFilter;
+    private final UsernameToRequestFilter usernameToRequestFilter;
 
     @Autowired
-    public WebSecurityConfig(AuthenticationTokenFilter authenticationTokenFilter) {
+    public WebSecurityConfig(AuthenticationTokenFilter authenticationTokenFilter, UsernameToRequestFilter usernameToRequestFilter) {
         this.authenticationTokenFilter = authenticationTokenFilter;
+        this.usernameToRequestFilter = usernameToRequestFilter;
     }
 
     @Override
@@ -43,6 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access denied"))
                 .and()
             .addFilterAfter(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(usernameToRequestFilter, SecurityContextHolderAwareRequestFilter.class)
             .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/auth").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth/register").hasAuthority("ADMIN")
