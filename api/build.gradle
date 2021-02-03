@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+}
+
+group = 'code-example-services'
+version = '1.0'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url = 'https://repo.spring.io/milestone' }
+}
+
+dependencies {
+    implementation 'org.springframework:spring-context:5.1.7.RELEASE'
+    implementation 'org.springframework:spring-jms:5.1.7.RELEASE'
+    implementation 'org.apache.activemq:activemq-broker:5.15.9'
+    compileOnly 'org.projectlombok:lombok:1.18.16'
+    annotationProcessor 'org.projectlombok:lombok:1.18.16'
+}

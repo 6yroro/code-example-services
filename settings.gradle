@@ -1,2 +1,3 @@
 rootProject.name = 'code-example-services'
-include 'api-gateway','auth','discovery','audit','data'
+include 'api-gateway', 'auth', 'discovery', 'audit', 'data', 'api'
+

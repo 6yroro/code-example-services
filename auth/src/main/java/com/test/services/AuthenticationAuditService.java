@@ -1,13 +1,9 @@
 package com.test.services;
 
 import com.test.database.entity.AuthUser;
-import com.test.model.AuditMessage;
 import com.test.model.AuthenticationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 /**
  * @author Alexander Zubkov
@@ -15,56 +11,52 @@ import java.time.LocalDateTime;
 @Service
 public class AuthenticationAuditService {
 
-    private final JmsTemplate jmsTemplate;
+    private final AuditService auditService;
     private final AuthenticationService authenticationService;
 
     @Autowired
-    public AuthenticationAuditService(JmsTemplate jmsTemplate, AuthenticationService authenticationService) {
-        this.jmsTemplate = jmsTemplate;
+    public AuthenticationAuditService(AuditService auditService, AuthenticationService authenticationService) {
+        this.auditService = auditService;
         this.authenticationService = authenticationService;
     }
 
-    private void sendAuditMessage(AuditMessage auditMessage) {
-        jmsTemplate.convertAndSend("audit", auditMessage);
-    }
-
     public String authenticate(AuthenticationRequest request) {
-        AuditMessage auditMessage = new AuditMessage();
-        auditMessage.setUsername(request.getUsername());
-        auditMessage.setAction("User Authentication");
-        auditMessage.setParams(request.toString());
+        String result = null;
         String token;
         try {
             token = authenticationService.authenticate(request);
-            auditMessage.setResult("Success: " + token);
-            auditMessage.setDate(LocalDateTime.now());
-            sendAuditMessage(auditMessage);
+            result = "Success: " + token;
         } catch (Exception e) {
-            auditMessage.setResult("Fail: " + e.getMessage());
-            auditMessage.setDate(LocalDateTime.now());
-            sendAuditMessage(auditMessage);
+            result = "Fail: " + e.getMessage();
             throw e;
+        } finally {
+            auditService.sendAuditMessage(
+                    request.getUsername(),
+                    "User Authentication",
+                    request.toString(),
+                    result
+            );
         }
 
         return token;
     }
 
     public AuthUser registerUser(AuthenticationRequest request, String username) {
-        AuditMessage auditMessage = new AuditMessage();
-        auditMessage.setUsername(username);
-        auditMessage.setAction("User Registration");
-        auditMessage.setParams(request.toString());
+        String result = null;
         AuthUser authUser;
         try {
             authUser = authenticationService.registerUser(request);
-            auditMessage.setResult("Success: " + authUser.toString());
-            auditMessage.setDate(LocalDateTime.now());
-            sendAuditMessage(auditMessage);
+            result = "Success: " + authUser.toString();
         } catch (Exception e) {
-            auditMessage.setResult("Fail: " + e.getMessage());
-            auditMessage.setDate(LocalDateTime.now());
-            sendAuditMessage(auditMessage);
+            result = "Fail: " + e.getMessage();
             throw e;
+        } finally {
+            auditService.sendAuditMessage(
+                    username,
+                    "User Registration",
+                    request.toString(),
+                    result
+            );
         }
 
         return authUser;
