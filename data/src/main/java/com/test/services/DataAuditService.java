@@ -1,25 +1,25 @@
 package com.test.services;
 
-import com.test.database.entity.AuthUser;
-import com.test.model.AuthenticationRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.test.database.entity.DataEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Alexander Zubkov
  */
 @Service
-public class AuthUserAuditService {
+public class DataAuditService {
 
     private final AuditService auditService;
-    private final AuthUserService authUserService;
+    private final DataService dataService;
 
-    @Autowired
-    public AuthUserAuditService(AuditService auditService, AuthUserService authUserService) {
+    public DataAuditService(AuditService auditService, DataService dataService) {
         this.auditService = auditService;
-        this.authUserService = authUserService;
+        this.dataService = dataService;
     }
 
     private String getUsername() {
@@ -28,46 +28,49 @@ public class AuthUserAuditService {
         return attributes.getRequest().getHeader("Username");
     }
 
-    public String authenticate(AuthenticationRequest request) {
+    public List<DataEntity> getDataList() {
         String result = null;
-        String token;
+        List<DataEntity> dataList;
         try {
-            token = authUserService.authenticate(request);
-            result = "Success: " + token;
-        } catch (Exception e) {
-            result = "Fail: " + e.getMessage();
-            throw e;
-        } finally {
-            auditService.sendMessage(
-                    request.getUsername(),
-                    "User Authentication",
-                    request.toString(),
-                    result
-            );
-        }
-
-        return token;
-    }
-
-    public AuthUser register(AuthenticationRequest request) {
-        String result = null;
-        AuthUser authUser;
-        try {
-            authUser = authUserService.register(request);
-            result = "Success: " + authUser.toString();
+            dataList = dataService.getDataList();
+            result = "Success: " + dataList.stream()
+                    .map(DataEntity::getId)
+                    .collect(Collectors.toList())
+                    .toString();
         } catch (Exception e) {
             result = "Fail: " + e.getMessage();
             throw e;
         } finally {
             auditService.sendMessage(
                     getUsername(),
-                    "User Registration",
-                    request.toString(),
+                    "Getting data list",
+                    null,
                     result
             );
         }
 
-        return authUser;
+        return dataList;
+    }
+
+    public DataEntity getData(Long id) {
+        String result = null;
+        DataEntity data;
+        try {
+            data = dataService.getData(id);
+            result = "Success: " + data.toString();
+        } catch (Exception e) {
+            result = "Fail: " + e.getMessage();
+            throw e;
+        } finally {
+            auditService.sendMessage(
+                    getUsername(),
+                    "Getting data",
+                    id.toString(),
+                    result
+            );
+        }
+
+        return data;
     }
 
 }

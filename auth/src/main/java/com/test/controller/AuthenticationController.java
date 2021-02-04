@@ -30,9 +30,8 @@ public class AuthenticationController {
 
     @RequestMapping(value = "register", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<AuthUser> register(@RequestBody AuthenticationRequest request,
-                                             @RequestHeader("Username") String username) {
-        return new ResponseEntity<>(authUserAuditService.register(request, username), HttpStatus.CREATED);
+    public ResponseEntity<AuthUser> register(@RequestBody AuthenticationRequest request) {
+        return new ResponseEntity<>(authUserAuditService.register(request), HttpStatus.CREATED);
     }
 
 }

@@ -21,12 +21,13 @@ public class DataService {
         this.dataRepository = dataRepository;
     }
 
-    public List<DataEntity> getData() {
+    List<DataEntity> getDataList() {
         return dataRepository.findAll();
     }
 
-    public DataEntity getData(Long id) {
-        return dataRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Data with id = " + id + " not found"));
+    DataEntity getData(Long id) {
+        return dataRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Data with id = " + id + " not found"));
     }
 
 }
