@@ -1,8 +1,6 @@
 package com.test.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import com.test.services.TokenService;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,8 +13,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -25,14 +21,16 @@ import java.util.stream.Collectors;
 @Component
 public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
+    private final TokenService tokenService;
     private final String tokenHeader;
     private final String tokenPrefix;
-    private final String Secret;
+    private final String secret;
 
-    public AuthenticationTokenFilter() {
-        tokenHeader = "Authorization";
-        tokenPrefix = "Bearer ";
-        Secret = "SECRET_KEY_FOR_TESTING_SPRING_SECURITY";
+    public AuthenticationTokenFilter(TokenService tokenService) {
+        this.tokenService = tokenService;
+        this.tokenHeader = "Authorization";
+        this.tokenPrefix = "Bearer ";
+        this.secret = "SECRET_KEY_FOR_TESTING_SPRING_SECURITY";
     }
 
     @Override
@@ -44,19 +42,13 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
             String token = header.replace(tokenPrefix, "");
 
             try {
-                Claims claims = Jwts.parserBuilder()
-                        .setSigningKey(Keys.hmacShaKeyFor(Secret.getBytes(Charset.forName("UTF-8"))))
-                        .build()
-                        .parseClaimsJws(token)
-                        .getBody();
+                tokenService.validate(token, secret);
 
-                String username = claims.getSubject();
+                String username = tokenService.getUsername();
                 if (username != null) {
-                    @SuppressWarnings("unchecked")
-                    List<String> authorities = (List<String>) claims.get("authorities");
                     SecurityContextHolder.getContext().setAuthentication(
                             new UsernamePasswordAuthenticationToken(username, null,
-                                    authorities.stream()
+                                    tokenService.getAuthorities().stream()
                                             .map(SimpleGrantedAuthority::new)
                                             .collect(Collectors.toList())));
                 }

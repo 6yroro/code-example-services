@@ -9,22 +9,22 @@ import org.springframework.stereotype.Service;
  * @author Alexander Zubkov
  */
 @Service
-public class AuthenticationAuditService {
+public class AuthUserAuditService {
 
     private final AuditService auditService;
-    private final AuthenticationService authenticationService;
+    private final AuthUserService authUserService;
 
     @Autowired
-    public AuthenticationAuditService(AuditService auditService, AuthenticationService authenticationService) {
+    public AuthUserAuditService(AuditService auditService, AuthUserService authUserService) {
         this.auditService = auditService;
-        this.authenticationService = authenticationService;
+        this.authUserService = authUserService;
     }
 
     public String authenticate(AuthenticationRequest request) {
         String result = null;
         String token;
         try {
-            token = authenticationService.authenticate(request);
+            token = authUserService.authenticate(request);
             result = "Success: " + token;
         } catch (Exception e) {
             result = "Fail: " + e.getMessage();
@@ -41,11 +41,11 @@ public class AuthenticationAuditService {
         return token;
     }
 
-    public AuthUser registerUser(AuthenticationRequest request, String username) {
+    public AuthUser register(AuthenticationRequest request, String username) {
         String result = null;
         AuthUser authUser;
         try {
-            authUser = authenticationService.registerUser(request);
+            authUser = authUserService.register(request);
             result = "Success: " + authUser.toString();
         } catch (Exception e) {
             result = "Fail: " + e.getMessage();
