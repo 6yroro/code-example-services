@@ -22,6 +22,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.postgresql:postgresql:9.4.1212'
     implementation 'org.liquibase:liquibase-core:3.6.2'
     runtime 'org.springframework.boot:spring-boot-devtools'

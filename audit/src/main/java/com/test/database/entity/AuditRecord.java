@@ -1,6 +1,8 @@
 package com.test.database.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 @Table(name = "records", schema = "audit")
 @DynamicInsert
 @Data
+@NoArgsConstructor
 public class AuditRecord {
 
     @Id
@@ -35,4 +38,11 @@ public class AuditRecord {
     @Column(name = "date")
     private LocalDateTime date;
 
+    public AuditRecord(String username, String action, String params, String result, LocalDateTime date) {
+        this.username = username;
+        this.action = action;
+        this.params = params;
+        this.result = result;
+        this.date = date;
+    }
 }

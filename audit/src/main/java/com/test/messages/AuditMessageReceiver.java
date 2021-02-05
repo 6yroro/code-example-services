@@ -25,15 +25,12 @@ public class AuditMessageReceiver {
     }
 
     @JmsListener(destination = "audit", containerFactory = "jmsFactory")
-    public void message(AuditMessage message) {
+    public void receive(AuditMessage message) {
         log.info("Message: " + message.toString());
-        AuditRecord auditRecord = new AuditRecord();
-        auditRecord.setUsername(message.getUsername());
-        auditRecord.setAction(message.getAction());
-        auditRecord.setParams(message.getParams());
-        auditRecord.setResult(message.getResult());
-        auditRecord.setDate(message.getDate());
-        auditRecordService.saveRecord(auditRecord);
+        auditRecordService.saveRecord(
+                new AuditRecord(message.getUsername(), message.getAction(), message.getParams(),
+                        message.getResult(), message.getDate())
+        );
     }
 
 }

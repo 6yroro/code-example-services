@@ -1,6 +1,7 @@
 package com.test.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.test.aop.AuditData;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "data", schema = "data")
 @Data
-public class DataEntity {
+public class DataEntity implements AuditData {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +36,8 @@ public class DataEntity {
     @JsonIgnore
     private String username;
 
+    @Override
+    public String get() {
+        return id.toString();
+    }
 }

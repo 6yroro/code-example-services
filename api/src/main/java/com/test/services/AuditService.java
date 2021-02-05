@@ -32,7 +32,7 @@ public class AuditService {
         unsentMessageList = new LinkedList<>();
     }
 
-    private void sendUnsentMessage(String destination) {
+    private void sendUnsentMessages(String destination) {
         if (unsentMessageList.isEmpty()) return;
 
         Iterator<AuditMessage> iterator = unsentMessageList.iterator();
@@ -47,16 +47,11 @@ public class AuditService {
         }
     }
 
-    void sendMessage(String username, String action, String params, String result) {
-        AuditMessage auditMessage = new AuditMessage();
-        auditMessage.setUsername(username);
-        auditMessage.setAction(action);
-        auditMessage.setParams(params);
-        auditMessage.setResult(result);
-        auditMessage.setDate(LocalDateTime.now());
+    public void sendMessage(String username, String action, String params, String result) {
+        AuditMessage auditMessage = new AuditMessage(username, action, params, result, LocalDateTime.now());
         try {
             jmsTemplate.convertAndSend(destination, auditMessage);
-            sendUnsentMessage(destination);
+            sendUnsentMessages(destination);
         } catch (Exception e) {
             unsentMessageList.add(auditMessage);
             log.error("Audit message can not be send", e);

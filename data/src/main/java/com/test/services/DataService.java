@@ -1,5 +1,6 @@
 package com.test.services;
 
+import com.test.aop.Audit;
 import com.test.database.entity.DataEntity;
 import com.test.database.repository.DataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,13 @@ public class DataService {
         this.dataRepository = dataRepository;
     }
 
-    List<DataEntity> getDataList() {
+    @Audit("Getting data list")
+    public List<DataEntity> getDataList() {
         return dataRepository.findAll();
     }
 
-    DataEntity getData(Long id) {
+    @Audit("Getting data")
+    public DataEntity getData(Long id) {
         return dataRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Data with id = " + id + " not found"));
     }
