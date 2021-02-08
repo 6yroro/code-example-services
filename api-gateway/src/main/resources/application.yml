@@ -34,3 +34,8 @@ zuul:
 
 ribbon:
   ReadTimeout: 3000
+
+token:
+  header: Authorization
+  prefix: Bearer
+  secret: SECRET_KEY_FOR_TESTING_SPRING_SECURITY

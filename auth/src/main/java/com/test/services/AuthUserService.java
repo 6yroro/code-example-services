@@ -5,6 +5,8 @@ import com.test.database.repository.AuthUserRepository;
 import com.test.exceptions.UserExistException;
 import com.test.model.AuthenticationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,23 +18,29 @@ import org.springframework.stereotype.Service;
  * @author Alexander Zubkov
  */
 @Service
+@PropertySource("classpath:token.properties")
 public class AuthUserService {
+
+    private final static String USER_AUTHORITY = "USER";
 
     private final AuthenticationManager authenticationManager;
     private final AuthUserRepository authUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
-
-    private final static String USER_AUTHORITY = "USER";
     private final String secret;
+    private final Long duration;
 
     @Autowired
-    public AuthUserService(AuthenticationManager authenticationManager, AuthUserRepository authUserRepository, PasswordEncoder passwordEncoder, TokenService tokenService) {
+    public AuthUserService(AuthenticationManager authenticationManager, AuthUserRepository authUserRepository,
+                           PasswordEncoder passwordEncoder, TokenService tokenService,
+                           @Value("${secret}") String secret,
+                           @Value("${duration}") Long duration) {
         this.authenticationManager = authenticationManager;
         this.authUserRepository = authUserRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenService = tokenService;
-        secret = "SECRET_KEY_FOR_TESTING_SPRING_SECURITY";
+        this.secret = secret;
+        this.duration = duration;
     }
 
     String authenticate(AuthenticationRequest request) {
@@ -41,7 +49,7 @@ public class AuthUserService {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return tokenService.getToken(authentication, secret);
+        return tokenService.getToken(authentication, secret, duration);
     }
 
     AuthUser register(AuthenticationRequest request) {

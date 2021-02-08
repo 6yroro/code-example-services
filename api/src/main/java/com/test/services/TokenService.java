@@ -19,13 +19,11 @@ import java.util.stream.Collectors;
 public class TokenService {
 
     private Claims claims;
-    private final String authorities;
 
-    public TokenService() {
-        authorities = "authorities";
-    }
+    private final String authorities = "authorities";
+    private final Charset charset = Charset.forName("UTF-8");
 
-    String getToken(Authentication authentication, String secret) {
+    String getToken(Authentication authentication, String secret, long duration) {
         Long now = System.currentTimeMillis();
 
         return Jwts.builder()
@@ -33,15 +31,15 @@ public class TokenService {
                 .claim(authorities, authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .setIssuedAt(new Date(now))
-                .setExpiration(new Date(now + 10 * 60 * 1000))
-                .signWith(Keys.hmacShaKeyFor(secret.getBytes(Charset.forName("UTF-8"))))
+                .setExpiration(new Date(now + duration))
+                .signWith(Keys.hmacShaKeyFor(secret.getBytes(charset)))
                 .compact();
     }
 
     public void validate(String token, String secret) {
         claims = null;
         claims = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes(Charset.forName("UTF-8"))))
+                .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes(charset)))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

@@ -24,11 +24,10 @@ import java.util.stream.Collectors;
 public class AuditAspect {
 
     private final AuditService auditService;
-    private final CharSequence delimiter;
+    private final CharSequence delimiter = ", ";
 
     public AuditAspect(AuditService auditService) {
         this.auditService = auditService;
-        delimiter = ", ";
     }
 
     private String getUsername() {

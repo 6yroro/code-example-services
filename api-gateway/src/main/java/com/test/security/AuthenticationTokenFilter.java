@@ -22,27 +22,23 @@ import java.util.stream.Collectors;
 public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
     private final TokenService tokenService;
-    private final String tokenHeader;
-    private final String tokenPrefix;
-    private final String secret;
+    private final TokenConfig tokenConfig;
 
-    public AuthenticationTokenFilter(TokenService tokenService) {
+    public AuthenticationTokenFilter(TokenService tokenService, TokenConfig tokenConfig) {
         this.tokenService = tokenService;
-        this.tokenHeader = "Authorization";
-        this.tokenPrefix = "Bearer ";
-        this.secret = "SECRET_KEY_FOR_TESTING_SPRING_SECURITY";
+        this.tokenConfig = tokenConfig;
     }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
                                     @NonNull FilterChain chain)throws IOException, ServletException {
-        String header = request.getHeader(tokenHeader);
+        String header = request.getHeader(tokenConfig.getHeader());
 
-        if (header != null && header.startsWith(tokenPrefix)) {
-            String token = header.replace(tokenPrefix, "");
+        if (header != null && header.startsWith(tokenConfig.getPrefix())) {
+            String token = header.replace(tokenConfig.getPrefix(), "").trim();
 
             try {
-                tokenService.validate(token, secret);
+                tokenService.validate(token, tokenConfig.getSecret());
 
                 String username = tokenService.getUsername();
                 if (username != null) {
