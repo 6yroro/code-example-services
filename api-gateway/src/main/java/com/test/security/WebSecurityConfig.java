@@ -1,6 +1,7 @@
 package com.test.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,11 +27,33 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final AuthenticationTokenFilter authenticationTokenFilter;
     private final UsernameToRequestFilter usernameToRequestFilter;
+    private final String authPath;
+    private final String registerPath;
+    private final String auditPath;
+    private final String dataPath;
+    private final String adminRole;
+    private final String[] dataRoles;
+    private final String[] auditRoles;
 
     @Autowired
-    public WebSecurityConfig(AuthenticationTokenFilter authenticationTokenFilter, UsernameToRequestFilter usernameToRequestFilter) {
+    public WebSecurityConfig(AuthenticationTokenFilter authenticationTokenFilter,
+                             UsernameToRequestFilter usernameToRequestFilter,
+                             @Value("${routes.auth}") String authPath,
+                             @Value("${routes.register}") String registerPath,
+                             @Value("${zuul.routes.audit-service.path}") String auditPath,
+                             @Value("${zuul.routes.data-service.path}") String dataPath,
+                             @Value("${authority.admin}") String adminRole,
+                             @Value("${authority.data}") String[] dataRoles,
+                             @Value("${authority.audit}") String[] auditRoles) {
         this.authenticationTokenFilter = authenticationTokenFilter;
         this.usernameToRequestFilter = usernameToRequestFilter;
+        this.authPath = authPath;
+        this.registerPath = registerPath;
+        this.auditPath = auditPath;
+        this.dataPath = dataPath;
+        this.adminRole = adminRole;
+        this.dataRoles = dataRoles;
+        this.auditRoles = auditRoles;
     }
 
     @Override
@@ -48,10 +71,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .addFilterAfter(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterAfter(usernameToRequestFilter, SecurityContextHolderAwareRequestFilter.class)
             .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/auth").permitAll()
-                .antMatchers(HttpMethod.POST, "/auth/register").hasAuthority("ADMIN")
-                .antMatchers("/data/**").hasAnyAuthority("ADMIN", "USER", "AUDIT")
-                .antMatchers("/audit/**").hasAnyAuthority("ADMIN", "AUDIT")
+                .antMatchers(HttpMethod.POST, authPath).permitAll()
+                .antMatchers(HttpMethod.POST, registerPath).hasAuthority(adminRole)
+                .antMatchers(dataPath).hasAnyAuthority(dataRoles)
+                .antMatchers(auditPath).hasAnyAuthority(auditRoles)
                 .anyRequest().authenticated()
                 .and()
             .cors();

@@ -31,7 +31,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain chain)throws IOException, ServletException {
+                                    @NonNull FilterChain chain) throws IOException, ServletException {
         String header = request.getHeader(tokenConfig.getHeader());
 
         if (header != null && header.startsWith(tokenConfig.getPrefix())) {

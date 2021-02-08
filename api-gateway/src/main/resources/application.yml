@@ -39,3 +39,12 @@ token:
   header: Authorization
   prefix: Bearer
   secret: SECRET_KEY_FOR_TESTING_SPRING_SECURITY
+
+routes:
+  auth: /auth
+  register: /auth/register
+
+authority:
+  admin: ADMIN
+  audit: AUDIT, ADMIN
+  data: ADMIN, USER, AUDIT
