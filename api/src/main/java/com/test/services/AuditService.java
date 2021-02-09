@@ -58,4 +58,8 @@ public class AuditService {
         }
     }
 
+    List<AuditMessage> getUnsentMessageList() {
+        return unsentMessageList;
+    }
+
 }
