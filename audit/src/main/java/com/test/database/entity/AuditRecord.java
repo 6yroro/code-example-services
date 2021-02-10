@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @DynamicInsert
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class AuditRecord {
 
     @Id

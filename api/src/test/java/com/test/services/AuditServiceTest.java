@@ -16,8 +16,9 @@ public class AuditServiceTest {
     private AuditService auditService;
 
     private void sendMessage(int n) {
+        String test = "test";
         for (int i = 0; i < n; i++) {
-            auditService.sendMessage("test", "test", "test", "test");
+            auditService.sendMessage(test, test, test, test);
         }
     }
 
