@@ -13,12 +13,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
+import javax.validation.Valid;
 
 /**
  * @author Alexander Zubkov
  */
 @Service
 @PropertySource("classpath:token.properties")
+@Validated
 public class AuthUserService {
 
     private final static String USER_AUTHORITY = "USER";
@@ -52,7 +56,7 @@ public class AuthUserService {
         return tokenService.getToken(authentication, secret, duration);
     }
 
-    AuthUser register(AuthenticationRequest request) {
+    AuthUser register(@Valid AuthenticationRequest request) {
         AuthUser user = authUserRepository
                 .findAuthUserByUsername(request.getUsername())
                 .orElse(null);

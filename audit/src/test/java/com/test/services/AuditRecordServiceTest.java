@@ -7,13 +7,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Alexander Zubkov
@@ -27,6 +27,7 @@ public class AuditRecordServiceTest {
     private AuditRecordService auditRecordService;
     private AuditRecord record1, record2, record3;
     private List<AuditRecord> allRecords;
+    private HibernateException exception;
 
     public AuditRecordServiceTest() {
         String test = "test";
@@ -34,6 +35,7 @@ public class AuditRecordServiceTest {
         record2 = new AuditRecord(2L, test, test, test, test, LocalDateTime.now());
         record3 = new AuditRecord(3L, test, test, test, test, LocalDateTime.now());
         allRecords = Arrays.asList(record1, record2, record3);
+        exception = new HibernateException("Error");
     }
 
     @Test
@@ -43,25 +45,25 @@ public class AuditRecordServiceTest {
 
     @Test
     public void checkGettingAllAuditRecords() {
-        Mockito.when(auditRecordRepository.findAll()).thenReturn(allRecords);
+        when(auditRecordRepository.findAll()).thenReturn(allRecords);
         assertEquals(allRecords, auditRecordService.getRecords());
     }
 
     @Test(expected = HibernateException.class)
     public void checkGettingAuditRecordsDBError() {
-        Mockito.when(auditRecordRepository.findAll()).thenThrow(new HibernateException("Error"));
+        when(auditRecordRepository.findAll()).thenThrow(exception);
         auditRecordService.getRecords();
     }
 
     @Test
     public void checkGettingAuditRecord1() {
-        Mockito.when(auditRecordRepository.findById(1L)).thenReturn(Optional.of(record1));
+        when(auditRecordRepository.findById(1L)).thenReturn(Optional.of(record1));
         assertEquals(record1, auditRecordService.getRecord(1L));
     }
 
     @Test
     public void checkGettingAuditRecord2() {
-        Mockito.when(auditRecordRepository.findById(2L)).thenReturn(Optional.of(record2));
+        when(auditRecordRepository.findById(2L)).thenReturn(Optional.of(record2));
         assertEquals(record2, auditRecordService.getRecord(2L));
     }
 
@@ -72,25 +74,25 @@ public class AuditRecordServiceTest {
 
     @Test(expected = HibernateException.class)
     public void checkGettingAuditRecordDBError() {
-        Mockito.when(auditRecordRepository.findById(3L)).thenThrow(new HibernateException("Error"));
+        when(auditRecordRepository.findById(3L)).thenThrow(exception);
         auditRecordService.getRecord(3L);
     }
 
     @Test
     public void checkSavingAuditRecord1() {
-        Mockito.when(auditRecordRepository.save(record1)).thenReturn(record1);
+        when(auditRecordRepository.save(record1)).thenReturn(record1);
         assertEquals(record1, auditRecordService.saveRecord(record1));
     }
 
     @Test
     public void checkSavingAuditRecord3() {
-        Mockito.when(auditRecordRepository.save(record3)).thenReturn(record3);
+        when(auditRecordRepository.save(record3)).thenReturn(record3);
         assertEquals(record3, auditRecordService.saveRecord(record3));
     }
 
     @Test(expected = HibernateException.class)
     public void checkSavingAuditRecordDBError() {
-        Mockito.when(auditRecordRepository.save(record2)).thenThrow(new HibernateException("Error"));
+        when(auditRecordRepository.save(record2)).thenThrow(exception);
         auditRecordService.saveRecord(record2);
     }
 

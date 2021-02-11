@@ -1,11 +1,12 @@
 package com.test.services;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.mockito.exceptions.base.MockitoException;
+import org.springframework.jms.UncategorizedJmsException;
 import org.springframework.jms.core.JmsTemplate;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Alexander Zubkov
@@ -14,6 +15,7 @@ public class AuditServiceTest {
 
     private JmsTemplate jmsTemplate;
     private AuditService auditService;
+    private UncategorizedJmsException jmsException;
 
     private void sendMessage(int n) {
         String test = "test";
@@ -22,42 +24,43 @@ public class AuditServiceTest {
         }
     }
 
+    public AuditServiceTest() {
+        jmsException = new UncategorizedJmsException("Error");
+    }
+
     @Before
     public void setUp() {
-        jmsTemplate = Mockito.mock(JmsTemplate.class);
+        jmsTemplate = mock(JmsTemplate.class);
         auditService = new AuditService(jmsTemplate);
     }
 
     @Test
     public void checkSendingMessage() {
-        Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.any(String.class), Mockito.any(Object.class));
+        doNothing().when(jmsTemplate).convertAndSend(any(String.class), any(Object.class));
         sendMessage(1);
     }
 
     @Test
     public void checkSendingMessageJmsIsFailing() {
-        Mockito.doThrow(new MockitoException("Error")).when(jmsTemplate)
-                .convertAndSend(Mockito.any(String.class), Mockito.any(Object.class));
+        doThrow(jmsException).when(jmsTemplate).convertAndSend(any(String.class), any(Object.class));
         sendMessage(1);
-        Assert.assertEquals(1, auditService.getUnsentMessageList().size());
+        assertEquals(1, auditService.getUnsentMessageList().size());
     }
 
     @Test
     public void checkSendingMessagesJmsIsFailing() {
-        Mockito.doThrow(new MockitoException("Error")).when(jmsTemplate)
-                .convertAndSend(Mockito.any(String.class), Mockito.any(Object.class));
+        doThrow(jmsException).when(jmsTemplate).convertAndSend(any(String.class), any(Object.class));
         sendMessage(2);
-        Assert.assertEquals(2, auditService.getUnsentMessageList().size());
+        assertEquals(2, auditService.getUnsentMessageList().size());
     }
 
     @Test
     public void checkSendingUnsentMessages() {
-        Mockito.doThrow(new MockitoException("Error")).when(jmsTemplate)
-                .convertAndSend(Mockito.any(String.class), Mockito.any(Object.class));
+        doThrow(jmsException).when(jmsTemplate).convertAndSend(any(String.class), any(Object.class));
         sendMessage(2);
-        Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.any(String.class), Mockito.any(Object.class));
+        doNothing().when(jmsTemplate).convertAndSend(any(String.class), any(Object.class));
         sendMessage(1);
-        Assert.assertEquals(0, auditService.getUnsentMessageList().size());
+        assertEquals(0, auditService.getUnsentMessageList().size());
     }
 
 }
