@@ -25,7 +25,7 @@ import javax.validation.Valid;
 @Validated
 public class AuthUserService {
 
-    private final static String USER_AUTHORITY = "USER";
+    private static final String USER_AUTHORITY = "USER";
 
     private final AuthenticationManager authenticationManager;
     private final AuthUserRepository authUserRepository;

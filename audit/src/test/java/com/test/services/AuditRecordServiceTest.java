@@ -35,7 +35,7 @@ public class AuditRecordServiceTest {
         record2 = new AuditRecord(2L, test, test, test, test, LocalDateTime.now());
         record3 = new AuditRecord(3L, test, test, test, test, LocalDateTime.now());
         allRecords = Arrays.asList(record1, record2, record3);
-        exception = new HibernateException("Error");
+        exception = new HibernateException("");
     }
 
     @Test
