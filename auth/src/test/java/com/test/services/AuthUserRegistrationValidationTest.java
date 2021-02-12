@@ -8,6 +8,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.validation.ConstraintViolationException;
@@ -15,12 +17,18 @@ import javax.validation.ConstraintViolationException;
 /**
  * @author Alexander Zubkov
  */
-@SpringBootTest
+@SpringBootTest(classes = AuthUserRegistrationValidationTestConfiguration.class)
 @RunWith(SpringRunner.class)
-public class AuthUserRegisterValidationTest {
+public class AuthUserRegistrationValidationTest {
 
     @MockBean
+    private AuthenticationManager authenticationManager;
+    @MockBean
     private AuthUserRepository authUserRepository;
+    @MockBean
+    private PasswordEncoder passwordEncoder;
+    @MockBean
+    private TokenService tokenService;
 
     @Autowired
     private AuthUserService authUserService;
@@ -28,7 +36,7 @@ public class AuthUserRegisterValidationTest {
     private AuthenticationRequest request;
     private String correct, size0, size1, size2, size3, size100, size101, size200, size201;
 
-    public AuthUserRegisterValidationTest() {
+    public AuthUserRegistrationValidationTest() {
         correct = "test";
         size0 = "";
         size1 = "1";
