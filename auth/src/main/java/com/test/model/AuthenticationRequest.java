@@ -20,7 +20,7 @@ public class AuthenticationRequest {
     @Size(min = 3, max = 200)
     private String password;
 
-    @Max(100)
+    @Size(max = 100)
     private String authorities;
 
 }
