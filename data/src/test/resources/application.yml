@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: data-service
+  jpa:
+    show-sql: true
+  liquibase:
+    enabled: false
+
+logging:
+  level:
+    root: warn
