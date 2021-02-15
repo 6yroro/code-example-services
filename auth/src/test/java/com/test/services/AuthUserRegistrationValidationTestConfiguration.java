@@ -1,8 +1,9 @@
 package com.test.services;
 
 import com.test.database.repository.AuthUserRepository;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
@@ -10,7 +11,11 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 /**
  * @author Alexander Zubkov
  */
-@Configuration
+@TestConfiguration
+@MockBean(AuthenticationManager.class)
+@MockBean(AuthUserRepository.class)
+@MockBean(PasswordEncoder.class)
+@MockBean(TokenService.class)
 public class AuthUserRegistrationValidationTestConfiguration {
 
     @Bean
