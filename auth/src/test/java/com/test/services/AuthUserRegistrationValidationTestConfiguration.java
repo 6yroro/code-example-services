@@ -19,6 +19,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 public class AuthUserRegistrationValidationTestConfiguration {
 
     @Bean
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     public AuthUserService authUserService(AuthenticationManager authenticationManager, AuthUserRepository authUserRepository,
                                            PasswordEncoder passwordEncoder, TokenService tokenService) {
         return new AuthUserService(authenticationManager, authUserRepository, passwordEncoder, tokenService, "", 0L);

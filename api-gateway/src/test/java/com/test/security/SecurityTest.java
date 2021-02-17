@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class SecurityTest {
 
     @MockBean
@@ -165,6 +166,48 @@ public class SecurityTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void authenticationTokenFilterNullTokenHeader() throws Exception {
+        when(tokenConfig.getHeader()).thenReturn(null);
+        mvc.perform(get(authPath)).andReturn();
+    }
+
+    @Test
+    public void authenticationTokenFilterNullRequestHeader() throws Exception {
+        mvc.perform(get(authPath)).andReturn();
+        verify(tokenConfig, never()).getPrefix();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void authenticationTokenFilterNullTokenPrefix() throws Exception {
+        mvc.perform(get(authPath).header(header, headerValue)).andReturn();
+    }
+
+    @Test
+    public void authenticationTokenFilterNotMatchRequestPrefix() throws Exception {
+        when(tokenConfig.getPrefix()).thenReturn(prefix);
+        mvc.perform(get(authPath).header(header, header)).andReturn();
+        verify(tokenConfig).getPrefix();
+    }
+
+    @Test
+    public void authenticationTokenFilterMatchRequestPrefix() throws Exception {
+        when(tokenConfig.getPrefix()).thenReturn(prefix);
+        mvc.perform(get(authPath).header(header, prefix)).andReturn();
+        verify(tokenConfig, times(2)).getPrefix();
+        verify(tokenService).validate(eq(""), isNull());
+    }
+
+    @Test
+    public void authenticationTokenFilterValidateError() throws Exception {
+        when(tokenConfig.getPrefix()).thenReturn(prefix);
+        when(tokenConfig.getSecret()).thenReturn(secret);
+        doThrow(new RuntimeException()).when(tokenService).validate(eq(token), eq(secret));
+        mvc.perform(get(authPath).header(header, headerValue)).andReturn();
+        verify(tokenService).validate(eq(token), eq(secret));
+        verify(tokenService, never()).getUsername();
+    }
+
     @Test
     public void authenticationTokenFilterNullUsername() throws Exception {
         when(tokenConfig.getPrefix()).thenReturn(prefix);
@@ -176,7 +219,7 @@ public class SecurityTest {
     }
 
     @Test
-    public void authenticationTokenFilterUsername() throws Exception {
+    public void authenticationTokenFilterReturnUsername() throws Exception {
         when(tokenConfig.getPrefix()).thenReturn(prefix);
         when(tokenConfig.getSecret()).thenReturn(secret);
         when(tokenService.getUsername()).thenReturn(USER);

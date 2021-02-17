@@ -12,6 +12,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  */
 @TestConfiguration
 @EnableAspectJAutoProxy
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 public class AuditAspectTestConf {
 
     @Bean
@@ -25,3 +26,4 @@ public class AuditAspectTestConf {
     }
 
 }
+
