@@ -4,6 +4,7 @@ import com.test.database.entity.AuthUser;
 import com.test.database.repository.AuthUserRepository;
 import com.test.exceptions.UserExistException;
 import com.test.model.AuthenticationRequest;
+import com.test.model.AuthenticationResponse;
 import org.hibernate.HibernateException;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,11 +13,18 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -47,16 +55,30 @@ public class AuthUserServiceTest {
         authUserService.authenticate(null);
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void checkAuthenticateEmptyRequest() {
         authUserService.authenticate(new AuthenticationRequest());
     }
 
-    @Test
-    public void checkAuthenticateEmptyRequestReturnToken() {
+    @Test(expected = NullPointerException.class)
+    public void checkAuthenticateEmptyRequestToken() {
         String token = "test";
         when(tokenService.getToken(any(), any(), anyLong())).thenReturn(token);
-        assertEquals(token, authUserService.authenticate(new AuthenticationRequest()));
+        authUserService.authenticate(new AuthenticationRequest());
+    }
+
+    @Test
+    public void checkAuthenticateEmptyRequestTokenAuthority() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE1"));
+        authorities.add(new SimpleGrantedAuthority("ROLE2"));
+        Authentication authentication = new UsernamePasswordAuthenticationToken("", null, authorities);
+        when(authenticationManager.authenticate(any())).thenReturn(authentication);
+        String token = "test";
+        when(tokenService.getToken(eq(authentication), any(), anyLong())).thenReturn(token);
+        List<String> resultAuthorities = authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+        assertEquals(new AuthenticationResponse(token, resultAuthorities),
+                authUserService.authenticate(new AuthenticationRequest()));
     }
 
     @Test(expected = BadCredentialsException.class)

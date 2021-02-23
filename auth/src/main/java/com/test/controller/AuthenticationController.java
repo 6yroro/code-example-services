@@ -25,7 +25,7 @@ public class AuthenticationController {
     @RequestMapping(value = "/", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
-        return ResponseEntity.ok(new AuthenticationResponse(authUserAuditService.authenticate(request)));
+        return ResponseEntity.ok(authUserAuditService.authenticate(request));
     }
 
     @RequestMapping(value = "register", method = RequestMethod.POST)

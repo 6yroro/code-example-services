@@ -2,6 +2,7 @@ package com.test.services;
 
 import com.test.database.entity.AuthUser;
 import com.test.model.AuthenticationRequest;
+import com.test.model.AuthenticationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -28,12 +29,12 @@ public class AuthUserAuditService {
         return attributes.getRequest().getHeader("Username");
     }
 
-    public String authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
         String result = null;
-        String token;
+        AuthenticationResponse response;
         try {
-            token = authUserService.authenticate(request);
-            result = "Success: " + token;
+            response = authUserService.authenticate(request);
+            result = "Success: " + response;
         } catch (Exception e) {
             result = "Fail: " + e.getMessage();
             throw e;
@@ -46,7 +47,7 @@ public class AuthUserAuditService {
             );
         }
 
-        return token;
+        return response;
     }
 
     public AuthUser register(AuthenticationRequest request) {

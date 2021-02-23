@@ -4,18 +4,21 @@ import com.test.database.entity.AuthUser;
 import com.test.database.repository.AuthUserRepository;
 import com.test.exceptions.UserExistException;
 import com.test.model.AuthenticationRequest;
+import com.test.model.AuthenticationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
+import java.util.stream.Collectors;
 
 /**
  * @author Alexander Zubkov
@@ -47,13 +50,18 @@ public class AuthUserService {
         this.duration = duration;
     }
 
-    String authenticate(AuthenticationRequest request) {
+    AuthenticationResponse authenticate(AuthenticationRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return tokenService.getToken(authentication, secret, duration);
+        return new AuthenticationResponse(
+                tokenService.getToken(authentication, secret, duration),
+                authentication.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList())
+        );
     }
 
     AuthUser register(@Valid AuthenticationRequest request) {
